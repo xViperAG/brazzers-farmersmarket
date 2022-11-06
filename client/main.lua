@@ -7,35 +7,25 @@ exports('inFarmersMarket', function()
     return inFarmersMarket
 end)
 
-local function isMarketOpen(market)
-    return true
-end
-
 local function claimBooth(k, v)
-    if isMarketOpen(v['type']) then
-        if not v['owner'] then
-            local dialog = exports[Config.Input]:ShowInput({
-                header = "Set Booth Password",
-                submitText = "Submit",
-                inputs = {
-                    {
-                        text = "Password", 
-                        name = "password", 
-                        type = "password", 
-                        isRequired = true, 
-                    },
-                }
-            })
-            if dialog then
-                for _, password in pairs(dialog) do
-                    TriggerServerEvent('brazzers-market:server:setOwner', k, password)
-                end
-            end
-        else
-            TriggerEvent("DoLongHudText", 'This booth has already been claimed!', 2)
+    if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
+    if v['owner'] then return QBCore.Functions.Notify(Lang:t("error.already_claimed"), "error", 5000) end
+    local dialog = exports[Config.Input]:ShowInput({
+        header = "Set Booth Password",
+        submitText = "Submit",
+        inputs = {
+            {
+                text = "Password", 
+                name = "password", 
+                type = "password", 
+                isRequired = true, 
+            },
+        }
+    })
+    if dialog then
+        for _, password in pairs(dialog) do
+            TriggerServerEvent('brazzers-market:server:setOwner', k, password)
         end
-    else
-        TriggerEvent("DoLongHudText", 'Market is closed!', 2)
     end
 end
 
@@ -44,57 +34,45 @@ local function leaveBooth(k)
 end
 
 local function joinBooth(k, v)
-    if isMarketOpen(v['type']) then
-        if v['owner'] then
-            local dialog = exports[Config.Input]:ShowInput({
-                header = "Password",
-                submitText = "Submit",
-                inputs = {
-                    {
-                        text = "Password", 
-                        name = "password", 
-                        type = "password", 
-                        isRequired = true, 
-                    },
-                }
-            })
-            if dialog then
-                for _, password in pairs(dialog) do
-                    if password == Config.Market[k]['password'] then
-                        TriggerServerEvent('brazzers-market:server:setGroupMembers', k)
-                    else
-                        TriggerEvent("DoLongHudText", 'Password is incorrect!', 2)
-                    end
-                end
-            end
-        else
-            TriggerEvent("DoLongHudText", 'This booth has not been claimed!', 2)
+    if not isMarketOpen(v['type']) then return QBCore.Functions.Notify(Lang:t("error.market_not_open"), "error", 5000) end
+    if not v['owner'] then return QBCore.Functions.Notify(Lang:t("error.not_claimed"), "error", 5000) end
+    local dialog = exports[Config.Input]:ShowInput({
+        header = "Password",
+        submitText = "Submit",
+        inputs = {
+            {
+                text = "Password", 
+                name = "password", 
+                type = "password", 
+                isRequired = true, 
+            },
+        }
+    })
+    if dialog then
+        for _, password in pairs(dialog) do
+            if password ~= Config.Market[k]['password'] then return QBCore.Functions.Notify(Lang:t("error.incorrect_password"), "error", 5000) end
+            TriggerServerEvent('brazzers-market:server:setGroupMembers', k)
         end
-    else
-        TriggerEvent("DoLongHudText", 'Market is closed!', 2)
     end
 end
 
 local function marketStash(k, v)
-    if isMarketOpen(v['type']) then
-        QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
-            if IsOwner or IsInGroup then
-                TriggerServerEvent("inventory:server:OpenInventory", "stash", "market_stash"..k, {
-                    maxweight = 500000,
-                    slots = 30,
-                })
-                TriggerEvent("inventory:client:SetCurrentStash", "market_stash"..k)
-            end
-        end, k)
-    else
-        TriggerEvent("DoLongHudText", 'Market is closed!', 2)
-    end
+    if not isMarketOpen(v['type']) then return QBCore.Functions.Notify(Lang:t("error.market_not_open"), "error", 5000) end
+    QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
+        if IsOwner or IsInGroup then
+            TriggerServerEvent("inventory:server:OpenInventory", "stash", "market_stash"..k, {
+                maxweight = Config.StashWeight,
+                slots = Config.StashSlots,
+            })
+            TriggerEvent("inventory:client:SetCurrentStash", "market_stash"..k)
+        end
+    end, k)
 end
 
 local function marketPickup(k)
     TriggerServerEvent("inventory:server:OpenInventory", "stash", "market_register"..k, {
-        maxweight = 200000,
-        slots = 25,
+        maxweight = Config.PickupWeight,
+        slots = Config.PickupSlots,
     })
     TriggerEvent("inventory:client:SetCurrentStash", "market_register"..k)
 end

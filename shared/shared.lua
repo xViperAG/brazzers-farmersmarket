@@ -1,9 +1,17 @@
-Config = {}
+Config = Config or {}
 
 Config.Core = 'qb-core'
 Config.Target = 'qb-target'
 Config.Input = 'qb-input'
 
+-- Stash Location
+Config.StashWeight = 500000
+Config.StashSlots = 30
+-- Pickup Location
+Config.PickupWeight = 200000
+Config.PickupSlots = 25
+
+Config.AllowMultipleClaims = false -- This allows multiple booths to be claimed from the same person [RECOMMENDED: FALSE]
 
 Config.Debug = false
 Config.Market = {

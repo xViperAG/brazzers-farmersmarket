@@ -9,7 +9,7 @@ end)
 
 local function claimBooth(k, v)
     if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
-    if v['owner'] then return QBCore.Functions.Notify(Lang:t("error.already_claimed"), "error", 5000) end
+    if v['owner'] then return notification("error.already_claimed", "error") end
     local dialog = exports[Config.Input]:ShowInput({
         header = "Set Booth Password",
         submitText = "Submit",
@@ -34,8 +34,8 @@ local function leaveBooth(k)
 end
 
 local function joinBooth(k, v)
-    if not isMarketOpen(v['type']) then return QBCore.Functions.Notify(Lang:t("error.market_not_open"), "error", 5000) end
-    if not v['owner'] then return QBCore.Functions.Notify(Lang:t("error.not_claimed"), "error", 5000) end
+    if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
+    if not v['owner'] then return notification("error.not_claimed", "error") end
     local dialog = exports[Config.Input]:ShowInput({
         header = "Password",
         submitText = "Submit",
@@ -50,14 +50,14 @@ local function joinBooth(k, v)
     })
     if dialog then
         for _, password in pairs(dialog) do
-            if password ~= Config.Market[k]['password'] then return QBCore.Functions.Notify(Lang:t("error.incorrect_password"), "error", 5000) end
+            if password ~= Config.Market[k]['password'] then return notification("error.incorrect_password", "error") end
             TriggerServerEvent('brazzers-market:server:setGroupMembers', k)
         end
     end
 end
 
 local function marketStash(k, v)
-    if not isMarketOpen(v['type']) then return QBCore.Functions.Notify(Lang:t("error.market_not_open"), "error", 5000) end
+    if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
     QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
         if IsOwner or IsInGroup then
             TriggerServerEvent("inventory:server:OpenInventory", "stash", "market_stash"..k, {

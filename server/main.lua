@@ -20,12 +20,12 @@ RegisterNetEvent('brazzers-market:server:setOwner', function(market, password)
 
     local CID = Player.PlayerData.citizenid
 
-    if Config.Market[market]['owner'] then return TriggerClientEvent('QBCore:Notify', src, Lang:t("error.already_claimed"), 'error') end
+    if Config.Market[market]['owner'] then return notification(src, "error.already_claimed", 'error') end
 
     if not Config.AllowMultipleClaims then
         for _, v in pairs(Config.Market) do
             if v['owner'] == CID then
-                TriggerClientEvent('QBCore:Notify', src, Lang:t("error.existing_booth"), 'error')
+                notification(src, "error.existing_booth", 'error')
                 return
             end
         end
@@ -39,7 +39,7 @@ RegisterNetEvent('brazzers-market:server:setOwner', function(market, password)
     Config.Market[market]['password'] = password
     TriggerClientEvent("brazzers-market:client:setBoothPassword", -1, market, password)
     -- Notification
-    TriggerClientEvent('QBCore:Notify', src, Lang:t("primary.booth_claimed"))
+    notification(src, "primary.booth_claimed")
 end)
 
 RegisterNetEvent('brazzers-market:server:setGroupMembers', function(market)
@@ -52,11 +52,11 @@ RegisterNetEvent('brazzers-market:server:setGroupMembers', function(market)
     local CID = Player.PlayerData.citizenid
     local charName = Player.PlayerData.charinfo.firstname..' '..Player.PlayerData.charinfo.lastname
 
-    if CID == Config.Market[market]['owner'] then return TriggerClientEvent('QBCore:Notify', src, Lang:t("error.already_part"), 'error') end    
+    if CID == Config.Market[market]['owner'] then return notification(src, "error.already_part", 'error') end    
     for marketType, _ in pairs(Config.Market) do
         for groupMember, _ in pairs(Config.Market[marketType]['groupMembers']) do
             if Config.Market[marketType]['groupMembers'][groupMember] == CID then
-                TriggerClientEvent('QBCore:Notify', src, Lang:t("error.already_part"), 'error')
+                notification(src, "error.already_part", 'error')
                 return
             end
         end
@@ -67,8 +67,8 @@ RegisterNetEvent('brazzers-market:server:setGroupMembers', function(market)
     TriggerClientEvent('brazzers-market:client:updateBooth', -1, market, 'groupMembers', json.encode(Config.Market[market]['groupMembers']))
     TriggerClientEvent('brazzers-market:client:setVariable', src, true)
     --Notification
-    TriggerClientEvent('QBCore:Notify', src, Lang:t("primary.joined_booth"))
-    TriggerClientEvent('QBCore:Notify', Owner.PlayerData.source, Lang:t("primary.global_joined_booth", { value = charName}))
+    notification(src, "primary.joined_booth")
+    notification(src, "primary.global_joined_booth", 'primary', { value = charName})
 end)
 
 RegisterNetEvent('brazzers-market:server:leaveBooth', function(market)
@@ -82,14 +82,14 @@ RegisterNetEvent('brazzers-market:server:leaveBooth', function(market)
     local charName = Player.PlayerData.charinfo.firstname..' '..Player.PlayerData.charinfo.lastname
 
     if Config.Market[market]['owner'] == CID then
-        TriggerClientEvent('QBCore:Notify', src, Lang:t("primary.disband_group"))
+        notification(src, "primary.disband_group")
         resetBooth(market)
         return 
     end
-    if not next(Config.Market[market]['groupMembers']) then return TriggerClientEvent('QBCore:Notify', src, Lang:t("error.not_part"), 'error') end
+    if not next(Config.Market[market]['groupMembers']) then return notification(src, "error.not_part", 'error') end
     for _, k in pairs(Config.Market[market]['groupMembers']) do
         if k ~= CID then
-            TriggerClientEvent('QBCore:Notify', src, Lang:t("error.not_part"), 'error')
+            notification(src, "error.not_part", 'error')
             return
         end
     end
@@ -109,8 +109,8 @@ RegisterNetEvent('brazzers-market:server:leaveBooth', function(market)
     TriggerClientEvent('brazzers-market:client:updateBooth', -1, market, 'groupMembers', json.encode(Config.Market[market]['groupMembers']))
     TriggerClientEvent('brazzers-market:client:setVariable', src, false)
     -- Notification
-    TriggerClientEvent('QBCore:Notify', src, Lang:t("primary.left_booth"))
-    TriggerClientEvent('QBCore:Notify', Owner.PlayerData.source, Lang:t("primary.global_left_booth", { value = charName}))
+    notification(src, "primary.left_booth")
+    notification(src, "primary.global_left_booth", 'primary', { value = charName})
 end)
 
 RegisterNetEvent('brazzers-market:server:resetMarkets', function()

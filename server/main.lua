@@ -121,16 +121,6 @@ RegisterNetEvent('brazzers-market:server:setBannerImage', function(market, url)
     TriggerClientEvent('brazzers-market:client:setBannerImage', -1, market, url)
 end)
 
-RegisterNetEvent('brazzers-market:server:resetMarkets', function()
-    local src = source
-    if not src then return end
-
-    for k, _ in pairs(Config.Market) do
-        resetBooth(k)
-        TriggerClientEvent('brazzers-market:client:setVariable', src, false)
-    end
-end)
-
 -- Callbacks
 
 QBCore.Functions.CreateCallback('brazzers-market:server:groupMembers', function(source, cb, market)

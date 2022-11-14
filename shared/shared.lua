@@ -4,6 +4,8 @@ Config.Core = 'qb-core'
 Config.Target = 'qb-target'
 Config.Input = 'qb-input'
 
+Config.DefaultImage = 'https://i.imgur.com/G8LcacY.png'
+
 -- Stash Location
 Config.StashWeight = 500000
 Config.StashSlots = 30
@@ -17,7 +19,7 @@ Config.Debug = false
 Config.Market = {
     [1] = {
         ['booth'] = {
-            ['coords'] = vector3(-1666.5, -1021.74, 13.02),
+            ['coords'] = vector3(-1661.88, -1018.39, 13.02),
             ['heading'] = 230,
         },
         ['register'] = {
@@ -28,6 +30,15 @@ Config.Market = {
         ['owner'] = nil,
         ['groupMembers'] = {},
         ['password'] = nil,
+        -- DUI SETTINGS --
+        ['boothDUI'] = {
+            ['ytd'] = 'fm_tent_scr_textures',
+            ['ytdname'] = 'fm_tent_screen_01',
+            ['width'] = 1024,
+            ['height'] = 1024,
+            ['url'] = Config.DefaultImage,
+            ['dui'] = nil,
+        },
     },
     [2] = {
         ['booth'] = {

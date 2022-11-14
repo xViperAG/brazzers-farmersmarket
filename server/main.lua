@@ -4,7 +4,7 @@ local function resetBooth(k)
     Config.Market[k]['owner'] = nil
     Config.Market[k]['groupMembers'] = {}
     Config.Market[k]['password'] = nil
-    Config.Market[k]['image'] = Config.DefaultImage
+    Config.Market[k]['boothDUI']['url'] = Config.DefaultImage
     TriggerClientEvent('brazzers-market:client:resetMarkets', -1, k)
     CreateThread(function()
         MySQL.query('DELETE FROM stashitems WHERE stash = @stash', {['@stash'] = 'market_stash'..k}, function(result) end)
@@ -111,6 +111,16 @@ RegisterNetEvent('brazzers-market:server:leaveBooth', function(market)
     -- Notification
     notification(src, "primary.left_booth")
     notification(src, "primary.global_left_booth", 'primary', { value = charName})
+end)
+
+RegisterNetEvent('brazzers-market:server:setBannerImage', function(market, url)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return end
+    if not market or not url then return end
+
+    Config.Market[market]['boothDUI']['url'] = url
+    TriggerClientEvent('brazzers-market:client:setBannerImage', -1, market, url)
 end)
 
 RegisterNetEvent('brazzers-market:server:resetMarkets', function()

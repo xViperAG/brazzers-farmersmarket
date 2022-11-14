@@ -3,9 +3,51 @@ QBCore = exports[Config.Core]:GetCoreObject()
 local inFarmersMarket = false
 
 -- Functions
+
 exports('inFarmersMarket', function()
     return inFarmersMarket
 end)
+
+local function CreateDUI(market, url)
+    Config.Market[market]['boothDUI']['dui'] = { obj = CreateDui(url, Config.Market[market]['boothDUI']['width'], Config.Market[market]['boothDUI']['height']) }
+
+    Config.Market[market]['boothDUI']['dui'].dict = ("%s-dict"):format(market)
+    Config.Market[market]['boothDUI']['dui'].texture = ("%s-txt"):format(market)
+    print(Config.Market[market]['boothDUI']['dui'].dict)
+    local dictObject = CreateRuntimeTxd(Config.Market[market]['boothDUI']['dui'].dict)
+    local duiHandle = GetDuiHandle(Config.Market[market]['boothDUI']['dui'].obj)
+    CreateRuntimeTextureFromDuiHandle(dictObject, Config.Market[market]['boothDUI']['dui'].texture, duiHandle)
+    AddReplaceTexture(Config.Market[market]['boothDUI']['ytd'], Config.Market[market]['boothDUI']['ytdname'], Config.Market[market]['boothDUI']['dui'].dict, Config.Market[market]['boothDUI']['dui'].texture)
+end
+
+local function removeDUI(market, removeAll)
+    if not Config.Market[market]['boothDUI']['dui'] then return end
+    SetDuiUrl(Config.Market[market]['boothDUI']['dui'].obj, Config.DefaultImage)
+    if removeAll then
+        DestroyDui(Config.Market[market]['boothDUI']['dui'].obj)
+        RemoveReplaceTexture(Config.Market[market]['boothDUI']['ytd'], Config.Market[market]['boothDUI']['ytdname'])
+    end
+    Config.Market[market]['boothDUI']['dui'] = nil
+end
+
+local function setupDUI()
+    pierZone = CircleZone:Create(vector3(-1654.94, -1024.43, 13.02), 10.00, {
+        name = "pier_market_zone",
+        debugPoly = true
+    })
+
+    pierZone:onPlayerInOut(function(isPointInside, point)
+        if isPointInside then
+            for k, v in pairs(Config.Market) do
+                CreateDUI(k, Config.Market[k]['boothDUI']['url'])
+            end
+        else
+            for k, v in pairs(Config.Market) do
+                removeDUI(k, true)
+            end
+        end
+    end)
+end
 
 local function claimBooth(k, v)
     if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
@@ -56,6 +98,29 @@ local function joinBooth(k, v)
     end
 end
 
+local function changeBanner(k, v)
+    if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
+    QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
+        if IsOwner or IsInGroup then
+            local market = exports[Config.Input]:ShowInput({
+                header = "Change Banner",
+                submitText = "Submit",
+                inputs = {
+                    {
+                        text = "Imgur (1024x1024)", 
+                        name = "banner", 
+                        type = "text", 
+                        isRequired = true, 
+                    },
+                }
+            })
+            if not market then return end
+            if not market.banner then return end
+            TriggerServerEvent('brazzers-market:server:setBannerImage', k, market.banner)
+        end
+    end, k)
+end
+
 local function marketStash(k, v)
     if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
     QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
@@ -91,11 +156,26 @@ RegisterNetEvent('brazzers-market:client:resetMarkets', function(market)
     Config.Market[market]['owner'] = nil
     Config.Market[market]['groupMembers'] = {}
     Config.Market[market]['password'] = nil
-    Config.Market[market]['image'] = Config.DefaultImage
+    Config.Market[market]['boothDUI']['url'] = Config.DefaultImage
+    removeDUI(market, false)
 end)
 
 RegisterNetEvent('brazzers-market:client:setVariable', function(variable)
     inFarmersMarket = variable
+end)
+
+RegisterNetEvent('brazzers-market:client:setBannerImage', function(market, url)
+    Config.Market[market]['boothDUI']['url'] = url
+
+    if Config.Market[market]['boothDUI']['dui'] then
+        SetDuiUrl(Config.Market[market]['boothDUI']['dui'].obj, Config.Market[market]['boothDUI']['url'])
+    else
+        CreateDUI(market, url)
+    end
+end)
+
+CreateThread(function()
+    setupDUI()
 end)
 
 -- Threads
@@ -129,7 +209,7 @@ CreateThread(function()
                     icon = 'fas fa-flag',
                     label = 'Leave Booth',
                     canInteract = function()
-                        if isMarketOpen(v['type']) then
+                        if isMarketOpen(v['type']) and Config.Market[k]['owner'] then
                             return true
                         end
                     end,
@@ -141,7 +221,19 @@ CreateThread(function()
                     icon = 'fas fa-circle',
                     label = 'Join Booth',
                     canInteract = function()
-                        if isMarketOpen(v['type']) then
+                        if isMarketOpen(v['type']) and Config.Market[k]['owner'] then
+                            return true
+                        end
+                    end,
+                },
+                {
+                    action = function()
+                        changeBanner(k, v)
+                    end,
+                    icon = 'fas fa-recycle',
+                    label = 'Change Banner',
+                    canInteract = function()
+                        if isMarketOpen(v['type']) and Config.Market[k]['owner'] then
                             return true
                         end
                     end,
@@ -165,7 +257,7 @@ CreateThread(function()
                     icon = 'fas fa-box',
                     label = 'Inventory',
                     canInteract = function()
-                        if isMarketOpen(v['type']) then
+                        if isMarketOpen(v['type']) and Config.Market[k]['owner'] then
                             return true
                         end
                     end,
@@ -177,7 +269,7 @@ CreateThread(function()
                     icon = 'fas fa-hand-holding',
                     label = 'Pick Up',
                     canInteract = function()
-                        if isMarketOpen(v['type']) then
+                        if isMarketOpen(v['type']) and Config.Market[k]['owner'] then
                             return true
                         end
                     end,

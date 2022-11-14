@@ -51,7 +51,7 @@ RegisterNetEvent('brazzers-market:server:setGroupMembers', function(market)
     local CID = Player.PlayerData.citizenid
     local charName = Player.PlayerData.charinfo.firstname..' '..Player.PlayerData.charinfo.lastname
 
-    if CID == Config.Market[market]['owner'] then return notification(src, "error.already_part", 'error') end    
+    if CID == Config.Market[market]['owner'] then return notification(src, "error.already_part", 'error') end
     for marketType, _ in pairs(Config.Market) do
         for groupMember, _ in pairs(Config.Market[marketType]['groupMembers']) do
             if Config.Market[marketType]['groupMembers'][groupMember] == CID then
@@ -76,7 +76,6 @@ RegisterNetEvent('brazzers-market:server:leaveBooth', function(market)
     if not Player then return end
     if not market then return end
 
-    local Owner = QBCore.Functions.GetPlayerByCitizenId(Config.Market[market]['owner'])
     local CID = Player.PlayerData.citizenid
     local charName = Player.PlayerData.charinfo.firstname..' '..Player.PlayerData.charinfo.lastname
 
@@ -97,7 +96,7 @@ RegisterNetEvent('brazzers-market:server:leaveBooth', function(market)
     local currentGroupMembers = {}
     if Config.Market[market]['groupMembers'] then
         for k, _ in pairs(Config.Market[market]['groupMembers']) do
-            if Config.Market[market]['groupMembers'][k] ~= citizenId then
+            if Config.Market[market]['groupMembers'][k] ~= CID then
                 currentGroupMembers[#currentGroupMembers+1] = Config.Market[market]['groupMembers'][k]
             end
         end
@@ -139,15 +138,13 @@ QBCore.Functions.CreateCallback('brazzers-market:server:groupMembers', function(
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
 
-    local Owner = QBCore.Functions.GetPlayerByCitizenId(Config.Market[market]['owner'])
-    local citizenId = Player.PlayerData.citizenid
-
+    local CID = Player.PlayerData.citizenid
     local groupOwner = false
     local groupMember = false
 
-    if Config.Market[market]['owner'] == citizenId then groupOwner = true end
+    if Config.Market[market]['owner'] == CID then groupOwner = true end
     for _, k in pairs(Config.Market[market]['groupMembers']) do
-        if k == citizenId then
+        if k == CID then
             groupMember = true
         end
     end

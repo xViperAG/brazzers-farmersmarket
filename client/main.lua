@@ -31,7 +31,7 @@ local function removeDUI(market, removeAll)
 end
 
 local function setupDUI()
-    pierZone = CircleZone:Create(vector3(-1654.94, -1024.43, 13.02), 10.00, {
+    local pierZone = CircleZone:Create(vector3(-1654.94, -1024.43, 13.02), 10.00, {
         name = "pier_market_zone",
         debugPoly = true
     })
@@ -98,7 +98,7 @@ local function joinBooth(k, v)
     end
 end
 
-local function changeBanner(k, v)
+local function changeBanner(k)
     if not isMarketOpen() then return notification("error.market_not_open", "error") end
     QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
         if IsOwner or IsInGroup then
@@ -121,7 +121,7 @@ local function changeBanner(k, v)
     end, k)
 end
 
-local function marketStash(k, v)
+local function marketStash(k)
     if not isMarketOpen() then return notification("error.market_not_open", "error") end
     QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
         if IsOwner or IsInGroup then
@@ -228,7 +228,7 @@ CreateThread(function()
                 },
                 {
                     action = function()
-                        changeBanner(k, v)
+                        changeBanner(k)
                     end,
                     icon = 'fas fa-recycle',
                     label = 'Change Banner',
@@ -252,7 +252,7 @@ CreateThread(function()
                 options = {
                 {
                     action = function()
-                        marketStash(k, v)
+                        marketStash(k)
                     end,
                     icon = 'fas fa-box',
                     label = 'Inventory',

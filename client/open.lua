@@ -1,6 +1,6 @@
 QBCore = exports[Config.Core]:GetCoreObject()
 
-function isMarketOpen(market)
+function isMarketOpen()
     return true
 end
 

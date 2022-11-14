@@ -7,8 +7,8 @@ local function resetBooth(k)
     Config.Market[k]['boothDUI']['url'] = Config.DefaultImage
     TriggerClientEvent('brazzers-market:client:resetMarkets', -1, k)
     CreateThread(function()
-        MySQL.query('DELETE FROM stashitems WHERE stash = @stash', {['@stash'] = 'market_stash'..k}, function(result) end)
-        MySQL.query('DELETE FROM stashitems WHERE stash = @stash', {['@stash'] = 'market_register'..k}, function(result) end)
+        MySQL.query('DELETE FROM stashitems WHERE stash = ?', {'market_stash'..k}, function(_) end)
+        MySQL.query('DELETE FROM stashitems WHERE stash = ?', {'market_register'..k}, function(_) end)
     end)
 end
 
@@ -48,7 +48,6 @@ RegisterNetEvent('brazzers-market:server:setGroupMembers', function(market)
     if not Player then return end
     if not market then return end
 
-    local Owner = QBCore.Functions.GetPlayerByCitizenId(Config.Market[market]['owner'])
     local CID = Player.PlayerData.citizenid
     local charName = Player.PlayerData.charinfo.firstname..' '..Player.PlayerData.charinfo.lastname
 
@@ -84,7 +83,7 @@ RegisterNetEvent('brazzers-market:server:leaveBooth', function(market)
     if Config.Market[market]['owner'] == CID then
         notification(src, "primary.disband_group")
         resetBooth(market)
-        return 
+        return
     end
     if not next(Config.Market[market]['groupMembers']) then return notification(src, "error.not_part", 'error') end
     for _, k in pairs(Config.Market[market]['groupMembers']) do

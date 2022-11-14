@@ -36,13 +36,13 @@ local function setupDUI()
         debugPoly = true
     })
 
-    pierZone:onPlayerInOut(function(isPointInside, point)
+    pierZone:onPlayerInOut(function(isPointInside, _)
         if isPointInside then
-            for k, v in pairs(Config.Market) do
+            for k, _ in pairs(Config.Market) do
                 CreateDUI(k, Config.Market[k]['boothDUI']['url'])
             end
         else
-            for k, v in pairs(Config.Market) do
+            for k, _ in pairs(Config.Market) do
                 removeDUI(k, true)
             end
         end
@@ -50,17 +50,17 @@ local function setupDUI()
 end
 
 local function claimBooth(k, v)
-    if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
+    if not isMarketOpen() then return notification("error.market_not_open", "error") end
     if v['owner'] then return notification("error.already_claimed", "error") end
     local dialog = exports[Config.Input]:ShowInput({
         header = "Set Booth Password",
         submitText = "Submit",
         inputs = {
             {
-                text = "Password", 
-                name = "password", 
-                type = "password", 
-                isRequired = true, 
+                text = "Password",
+                name = "password",
+                type = "password",
+                isRequired = true,
             },
         }
     })
@@ -76,17 +76,17 @@ local function leaveBooth(k)
 end
 
 local function joinBooth(k, v)
-    if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
+    if not isMarketOpen() then return notification("error.market_not_open", "error") end
     if not v['owner'] then return notification("error.not_claimed", "error") end
     local dialog = exports[Config.Input]:ShowInput({
         header = "Password",
         submitText = "Submit",
         inputs = {
             {
-                text = "Password", 
-                name = "password", 
-                type = "password", 
-                isRequired = true, 
+                text = "Password",
+                name = "password",
+                type = "password",
+                isRequired = true,
             },
         }
     })
@@ -99,7 +99,7 @@ local function joinBooth(k, v)
 end
 
 local function changeBanner(k, v)
-    if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
+    if not isMarketOpen() then return notification("error.market_not_open", "error") end
     QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
         if IsOwner or IsInGroup then
             local market = exports[Config.Input]:ShowInput({
@@ -107,10 +107,10 @@ local function changeBanner(k, v)
                 submitText = "Submit",
                 inputs = {
                     {
-                        text = "Imgur (1024x1024)", 
-                        name = "banner", 
-                        type = "text", 
-                        isRequired = true, 
+                        text = "Imgur (1024x1024)",
+                        name = "banner",
+                        type = "text",
+                        isRequired = true,
                     },
                 }
             })
@@ -122,7 +122,7 @@ local function changeBanner(k, v)
 end
 
 local function marketStash(k, v)
-    if not isMarketOpen(v['type']) then return notification("error.market_not_open", "error") end
+    if not isMarketOpen() then return notification("error.market_not_open", "error") end
     QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
         if IsOwner or IsInGroup then
             TriggerServerEvent("inventory:server:OpenInventory", "stash", "market_stash"..k, {
@@ -189,7 +189,7 @@ CreateThread(function()
             minZ = v['booth']['coords'].z,
             maxZ = v['booth']['coords'].z + 1.5,
             }, {
-                options = { 
+                options = {
                 {
                     action = function()
                         claimBooth(k, v)
@@ -197,7 +197,7 @@ CreateThread(function()
                     icon = 'fas fa-flag',
                     label = 'Claim Booth',
                     canInteract = function()
-                        if isMarketOpen(v['type']) then
+                        if isMarketOpen() then
                             return true
                         end
                     end,
@@ -209,7 +209,7 @@ CreateThread(function()
                     icon = 'fas fa-flag',
                     label = 'Leave Booth',
                     canInteract = function()
-                        if isMarketOpen(v['type']) and Config.Market[k]['owner'] then
+                        if isMarketOpen() and Config.Market[k]['owner'] then
                             return true
                         end
                     end,
@@ -221,7 +221,7 @@ CreateThread(function()
                     icon = 'fas fa-circle',
                     label = 'Join Booth',
                     canInteract = function()
-                        if isMarketOpen(v['type']) and Config.Market[k]['owner'] then
+                        if isMarketOpen() and Config.Market[k]['owner'] then
                             return true
                         end
                     end,
@@ -233,7 +233,7 @@ CreateThread(function()
                     icon = 'fas fa-recycle',
                     label = 'Change Banner',
                     canInteract = function()
-                        if isMarketOpen(v['type']) and Config.Market[k]['owner'] then
+                        if isMarketOpen() and Config.Market[k]['owner'] then
                             return true
                         end
                     end,
@@ -249,7 +249,7 @@ CreateThread(function()
             minZ = v['register']['coords'].z - 1.0,
             maxZ = v['register']['coords'].z + 1.0,
             }, {
-                options = { 
+                options = {
                 {
                     action = function()
                         marketStash(k, v)
@@ -257,7 +257,7 @@ CreateThread(function()
                     icon = 'fas fa-box',
                     label = 'Inventory',
                     canInteract = function()
-                        if isMarketOpen(v['type']) and Config.Market[k]['owner'] then
+                        if isMarketOpen() and Config.Market[k]['owner'] then
                             return true
                         end
                     end,
@@ -269,7 +269,7 @@ CreateThread(function()
                     icon = 'fas fa-hand-holding',
                     label = 'Pick Up',
                     canInteract = function()
-                        if isMarketOpen(v['type']) and Config.Market[k]['owner'] then
+                        if isMarketOpen() and Config.Market[k]['owner'] then
                             return true
                         end
                     end,

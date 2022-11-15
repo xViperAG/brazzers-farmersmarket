@@ -10,10 +10,8 @@ end)
 
 local function CreateDUI(market, url)
     Config.Market[market]['boothDUI']['dui'] = { obj = CreateDui(url, Config.Market[market]['boothDUI']['width'], Config.Market[market]['boothDUI']['height']) }
-
     Config.Market[market]['boothDUI']['dui'].dict = ("%s-dict"):format(market)
     Config.Market[market]['boothDUI']['dui'].texture = ("%s-txt"):format(market)
-    print(Config.Market[market]['boothDUI']['dui'].dict)
     local dictObject = CreateRuntimeTxd(Config.Market[market]['boothDUI']['dui'].dict)
     local duiHandle = GetDuiHandle(Config.Market[market]['boothDUI']['dui'].obj)
     CreateRuntimeTextureFromDuiHandle(dictObject, Config.Market[market]['boothDUI']['dui'].texture, duiHandle)
@@ -31,9 +29,13 @@ local function removeDUI(market, removeAll)
 end
 
 local function setupDUI()
-    local pierZone = CircleZone:Create(vector3(-1654.94, -1024.43, 13.02), 10.00, {
+    QBCore.Functions.TriggerCallback('brazzers-market:server:getMarketDui',function(DUIs)
+        Config.Market = DUIs
+    end)
+
+    local pierZone = CircleZone:Create(Config.PierPoly, Config.PierRadius, {
         name = "pier_market_zone",
-        debugPoly = true
+        debugPoly = Config.Debug
     })
 
     pierZone:onPlayerInOut(function(isPointInside, _)
@@ -49,9 +51,9 @@ local function setupDUI()
     end)
 end
 
-local function claimBooth(k, v)
+local function claimBooth(k)
     if not isMarketOpen() then return notification("error.market_not_open", "error") end
-    if v['owner'] then return notification("error.already_claimed", "error") end
+    if Config.Market[k]['owner'] then return notification("error.already_claimed", "error") end
     local dialog = exports[Config.Input]:ShowInput({
         header = "Set Booth Password",
         submitText = "Submit",
@@ -75,9 +77,9 @@ local function leaveBooth(k)
     TriggerServerEvent('brazzers-market:server:leaveBooth', k)
 end
 
-local function joinBooth(k, v)
+local function joinBooth(k)
     if not isMarketOpen() then return notification("error.market_not_open", "error") end
-    if not v['owner'] then return notification("error.not_claimed", "error") end
+    if not Config.Market[k]['owner'] then return notification("error.not_claimed", "error") end
     local dialog = exports[Config.Input]:ShowInput({
         header = "Password",
         submitText = "Submit",
@@ -174,11 +176,11 @@ RegisterNetEvent('brazzers-market:client:setBannerImage', function(market, url)
     end
 end)
 
+-- Threads
+
 CreateThread(function()
     setupDUI()
 end)
-
--- Threads
 
 CreateThread(function()
     for k, v in pairs(Config.Market) do
@@ -192,7 +194,7 @@ CreateThread(function()
                 options = {
                 {
                     action = function()
-                        claimBooth(k, v)
+                        claimBooth(k)
                     end,
                     icon = 'fas fa-flag',
                     label = 'Claim Booth',
@@ -216,7 +218,7 @@ CreateThread(function()
                 },
                 {
                     action = function()
-                        joinBooth(k, v)
+                        joinBooth(k)
                     end,
                     icon = 'fas fa-circle',
                     label = 'Join Booth',

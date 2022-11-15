@@ -7,8 +7,10 @@ local function resetBooth(k)
     Config.Market[k]['boothDUI']['url'] = Config.DefaultImage
     TriggerClientEvent('brazzers-market:client:resetMarkets', -1, k)
     CreateThread(function()
-        MySQL.query('DELETE FROM stashitems WHERE stash = ?', {'market_stash'..k}, function(_) end)
-        MySQL.query('DELETE FROM stashitems WHERE stash = ?', {'market_register'..k}, function(_) end)
+        if Config.WipeStashOnLeave then
+            MySQL.query('DELETE FROM stashitems WHERE stash = ?', {'market_stash'..k}, function(_) end)
+            MySQL.query('DELETE FROM stashitems WHERE stash = ?', {'market_register'..k}, function(_) end)
+        end
     end)
 end
 
@@ -48,6 +50,7 @@ RegisterNetEvent('brazzers-market:server:setGroupMembers', function(market)
     if not Player then return end
     if not market then return end
 
+    local Owner = QBCore.Functions.GetPlayerByCitizenId(Config.Market[market]['owner'])
     local CID = Player.PlayerData.citizenid
     local charName = Player.PlayerData.charinfo.firstname..' '..Player.PlayerData.charinfo.lastname
 
@@ -67,7 +70,7 @@ RegisterNetEvent('brazzers-market:server:setGroupMembers', function(market)
     TriggerClientEvent('brazzers-market:client:setVariable', src, true)
     --Notification
     notification(src, "primary.joined_booth")
-    notification(src, "primary.global_joined_booth", 'primary', { value = charName})
+    notification(Owner.PlayerData.source, "primary.global_joined_booth", 'primary', { value = charName})
 end)
 
 RegisterNetEvent('brazzers-market:server:leaveBooth', function(market)
@@ -76,6 +79,7 @@ RegisterNetEvent('brazzers-market:server:leaveBooth', function(market)
     if not Player then return end
     if not market then return end
 
+    local Owner = QBCore.Functions.GetPlayerByCitizenId(Config.Market[market]['owner'])
     local CID = Player.PlayerData.citizenid
     local charName = Player.PlayerData.charinfo.firstname..' '..Player.PlayerData.charinfo.lastname
 
@@ -108,7 +112,7 @@ RegisterNetEvent('brazzers-market:server:leaveBooth', function(market)
     TriggerClientEvent('brazzers-market:client:setVariable', src, false)
     -- Notification
     notification(src, "primary.left_booth")
-    notification(src, "primary.global_left_booth", 'primary', { value = charName})
+    notification(Owner.PlayerData.source, "primary.global_left_booth", 'primary', { value = charName})
 end)
 
 RegisterNetEvent('brazzers-market:server:setBannerImage', function(market, url)
@@ -139,4 +143,8 @@ QBCore.Functions.CreateCallback('brazzers-market:server:groupMembers', function(
         end
     end
     cb(groupOwner, groupMember)
+end)
+
+QBCore.Functions.CreateCallback('brazzers-market:server:getMarketDui', function(_, cb)
+    cb(Config.Market)
 end)

@@ -19,18 +19,20 @@
 # Installation steps
 
 ## General Setup
-A group based market system, allowing you to claim, join, and leave booths set in the config. Each booth is set with an inventory to store any sellable content inside and a pickup location to handle your transactions with your customers. This system is absolutely amazing for roleplay within any server that needs ideas for businesses
+A group based market system, allowing you to claim, join, leave, and change booth DUIs all in game set through the config. Each booth is set with an inventory to store any sellable content inside and a pickup location to handle your transactions with your customers. This system is absolutely amazing for roleplay within any server that needs ideas for businesses
 
 Preview: [SOON]
 
 ## Features
 1. Unique-Synced Market System
 2. Group Based System (Standalone) Not Requiring Any Group Dependencies
-3. Ability To Claim, Join, & Leave Booths
-4. Ability To Create More Booths (Editable in the Config)'
-5. Multi-Notification Support
-6. Multi-Language Support using QBCore Locales
-7. 24/7 Support in discord
+3. Changeable DUIs Synced With All Players
+4. Custom Farmers Market Map Made Specifically For This System
+5. Ability To Claim, Join, & Leave Booths
+6. Ability To Create More Booths (Editable in the Config)
+7. Multi-Notification Support
+8. Multi-Language Support using QBCore Locales
+9. 24/7 Support in discord
 
 ## Credits
 Taken#8395 - Farmers Market Map [Discord Server]()

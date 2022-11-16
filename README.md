@@ -24,7 +24,8 @@ A group based market system, allowing you to claim, join, leave, and change boot
 ## Compatibility
 This system is compatible with (ox_inventory, ox_target, ox_lib, etc) & (qb-inventory, qb-target, etc) All options are in the config to modify your prefered style of installation
 
-Preview: [SOON]
+Preview: [[SOON](https://youtu.be/3EoIAHtDX9U)]
+MAP DISCOUNT CODE: fm100
 
 ## Features
 1. Unique-Synced Market System
@@ -38,7 +39,7 @@ Preview: [SOON]
 9. 24/7 Support in discord
 
 ## Credits
-Taken#8395 - Farmers Market Map [Discord Server]()
+Taken#8395 - Farmers Market Map [Tebex](https://burgerboy-productions.tebex.io/)
 
 ## Dependencies
 1. qbcore

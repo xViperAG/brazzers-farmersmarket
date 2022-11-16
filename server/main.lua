@@ -8,6 +8,12 @@ local function resetBooth(k)
     TriggerClientEvent('brazzers-market:client:resetMarkets', -1, k)
     CreateThread(function()
         if Config.WipeStashOnLeave then
+            if Config.Inventory == 'ox' then
+                exports.ox_inventory:ClearInventory('market_stash'..k, '')
+                exports.ox_inventory:ClearInventory('market_pickup'..k, '')
+                return
+            end
+
             MySQL.query('DELETE FROM stashitems WHERE stash = ?', {'market_stash'..k}, function(_) end)
             MySQL.query('DELETE FROM stashitems WHERE stash = ?', {'market_register'..k}, function(_) end)
         end
@@ -147,4 +153,15 @@ end)
 
 QBCore.Functions.CreateCallback('brazzers-market:server:getMarketDui', function(_, cb)
     cb(Config.Market)
+end)
+
+AddEventHandler('onResourceStart', function(resourceName)
+    if resourceName == GetCurrentResourceName() then
+        if Config.Inventory == 'ox' then
+            for k, _ in pairs(Config.Market) do
+                exports.ox_inventory:RegisterStash('market_stash'..k, 'Market Stash', Config.StashSlots, Config.StashWeight, false)
+                exports.ox_inventory:RegisterStash('market_pickup'..k, 'Pickup', Config.PickupSlots, Config.PickupWeight, false)
+            end
+        end
+    end
 end)

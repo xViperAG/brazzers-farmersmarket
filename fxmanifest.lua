@@ -22,6 +22,14 @@ server_scripts {
 
 shared_scripts {
 	'@qb-core/shared/locale.lua',
+    -- '@ox_lib/init.lua', -- IF YOU USING OX UNCOMMENT THIS
 	'locales/*.lua',
+	'shared/*.lua',
+}
+
+escrow_ignore {
+    'client/open.lua',
+    'server/open.lua',
+    'locales/*.lua',
 	'shared/*.lua',
 }

@@ -3,8 +3,9 @@ Config = Config or {}
 Config.Debug = false
 
 Config.Core = 'qb-core'
-Config.Target = 'qb-target'
-Config.Input = 'qb-input'
+Config.Target = 'qb-target' -- 'ox' or resource name (qb-target)
+Config.Input = 'qb-input' -- 'ox' or resource name (qb-input)
+Config.Inventory = 'qb-inventory' -- 'ox' or resource name (qb-inventory)
 
 Config.DefaultImage = 'https://i.imgur.com/G8LcacY.png'
 

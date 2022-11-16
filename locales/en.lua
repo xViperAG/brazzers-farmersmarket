@@ -7,6 +7,7 @@ local Translations = {
         existing_booth = 'You already have a claimed booth',
         already_part = 'You\'re already part of this group',
         not_part = 'You\'re not part of this group',
+        password_not_number = 'Password must be a number',
     },
     primary = {
         booth_claimed = 'You have claimed a booth',
@@ -16,6 +17,15 @@ local Translations = {
         global_left_booth = '%{value} left the booth',
         disband_group = 'Booth disbanded',
     },
+    other = {
+        input_password = 'Input Booth Password',
+        set_password = 'Set Booth Password',
+        password = 'Password',
+        change_banner = 'Change banner',
+        banner_url = 'Imjur (1024x1025)',
+        submit = 'Submit',
+    }
+
 }
 
 Lang = Locale:new({

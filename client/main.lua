@@ -54,23 +54,36 @@ end
 local function claimBooth(k)
     if not isMarketOpen() then return notification("error.market_not_open", "error") end
     if Config.Market[k]['owner'] then return notification("error.already_claimed", "error") end
-    local dialog = exports[Config.Input]:ShowInput({
-        header = "Set Booth Password",
-        submitText = "Submit",
+
+    if Config.Input == 'ox' then
+        local input = lib.inputDialog(Lang:t('other.set_password'), {Lang:t('other.password')})
+        if not input then return end
+
+        local password = tonumber(input[1])
+        if not password then return notification("error.password_not_number", "error") end
+
+        TriggerServerEvent('brazzers-market:server:setOwner', k, password)
+        return
+    end
+
+    local input = exports[Config.Input]:ShowInput({
+        header = Lang:t('other.set_password'),
+        submitText = Lang:t('other.submit'),
         inputs = {
             {
-                text = "Password",
+                text = Lang:t('other.password'),
                 name = "password",
                 type = "password",
                 isRequired = true,
             },
         }
     })
-    if dialog then
-        for _, password in pairs(dialog) do
-            TriggerServerEvent('brazzers-market:server:setOwner', k, password)
-        end
-    end
+    if not input then return end
+    if not input.password then return end
+
+    local password = input.password
+
+    TriggerServerEvent('brazzers-market:server:setOwner', k, password)
 end
 
 local function leaveBooth(k)
@@ -80,45 +93,72 @@ end
 local function joinBooth(k)
     if not isMarketOpen() then return notification("error.market_not_open", "error") end
     if not Config.Market[k]['owner'] then return notification("error.not_claimed", "error") end
-    local dialog = exports[Config.Input]:ShowInput({
-        header = "Password",
-        submitText = "Submit",
+
+    if Config.Input == 'ox' then
+        local input = lib.inputDialog(Lang:t('other.input_password'), {Lang:t('other.password')})
+        if not input then return end
+    
+        local password = tonumber(input[1])
+        if not password then return notification("error.password_not_number", "error") end
+    
+        if password ~= Config.Market[k]['password'] then return notification("error.incorrect_password", "error") end
+        TriggerServerEvent('brazzers-market:server:setGroupMembers', k)
+        return
+    end
+
+    local input = exports[Config.Input]:ShowInput({
+        header = Lang:t('other.input_password'),
+        submitText = Lang:t('other.submit'),
         inputs = {
             {
-                text = "Password",
+                text = Lang:t('other.password'),
                 name = "password",
                 type = "password",
                 isRequired = true,
             },
         }
     })
-    if dialog then
-        for _, password in pairs(dialog) do
-            if password ~= Config.Market[k]['password'] then return notification("error.incorrect_password", "error") end
-            TriggerServerEvent('brazzers-market:server:setGroupMembers', k)
-        end
-    end
+
+    if not input then return end
+    if not input.password then return end
+
+    local password = input.password
+    if password ~= Config.Market[k]['password'] then return notification("error.incorrect_password", "error") end
+    TriggerServerEvent('brazzers-market:server:setGroupMembers', k)
 end
 
 local function changeBanner(k)
     if not isMarketOpen() then return notification("error.market_not_open", "error") end
     QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
         if IsOwner or IsInGroup then
-            local market = exports[Config.Input]:ShowInput({
-                header = "Change Banner",
-                submitText = "Submit",
+            if Config.Input == 'ox' then
+                local input = lib.inputDialog(Lang:t('other.change_banner'), {Lang:t('other.banner_url')})
+                if not input then return end
+    
+                local banner = input[1]
+                if not banner then return end
+                TriggerServerEvent('brazzers-market:server:setBannerImage', k, banner)
+                return
+            end
+
+            local input = exports[Config.Input]:ShowInput({
+                header = Lang:t('other.change_banner'),
+                submitText = Lang:t('other.submit'),
                 inputs = {
                     {
-                        text = "Imgur (1024x1024)",
+                        text = Lang:t('other.banner_url'),
                         name = "banner",
                         type = "text",
                         isRequired = true,
                     },
                 }
             })
-            if not market then return end
-            if not market.banner then return end
-            TriggerServerEvent('brazzers-market:server:setBannerImage', k, market.banner)
+
+            if not input then return end
+            if not input.banner then return end
+
+            local banner = input.banner
+            TriggerServerEvent('brazzers-market:server:setBannerImage', k, banner)
         end
     end, k)
 end
@@ -127,6 +167,11 @@ local function marketStash(k)
     if not isMarketOpen() then return notification("error.market_not_open", "error") end
     QBCore.Functions.TriggerCallback('brazzers-market:server:groupMembers', function(IsOwner, IsInGroup)
         if IsOwner or IsInGroup then
+            if Config.Inventory == 'ox' then
+                exports.ox_inventory:openInventory('stash', {id='market_stash'..k, owner=false})
+                return
+            end
+
             TriggerServerEvent("inventory:server:OpenInventory", "stash", "market_stash"..k, {
                 maxweight = Config.StashWeight,
                 slots = Config.StashSlots,
@@ -137,6 +182,11 @@ local function marketStash(k)
 end
 
 local function marketPickup(k)
+    if Config.Inventory == 'ox' then
+        exports.ox_inventory:openInventory('stash', {id='market_pickup'..k, owner=false})
+        return
+    end
+
     TriggerServerEvent("inventory:server:OpenInventory", "stash", "market_register"..k, {
         maxweight = Config.PickupWeight,
         slots = Config.PickupSlots,
@@ -184,6 +234,105 @@ end)
 
 CreateThread(function()
     for k, v in pairs(Config.Market) do
+        if Config.Target == 'ox' then
+            exports.ox_target:addBoxZone({
+                coords = v['booth']['coords'].xyz,
+                size = vec3(1.0, 3.0, 1.0),
+                rotation = 135,
+                debug = Config.Debug,
+                options = {
+                    {   
+                        name = "market_booth_"..k,
+                        icon = 'fas fa-flag',
+                        label = 'Claim Booth',
+                        onSelect = function()
+                            claimBooth(k)
+                        end,
+                        canInteract = function()
+                            if not isMarketOpen() then return end
+                            return true
+                        end,
+                    },
+                    {   
+                        name = "market_booth_"..k,
+                        icon = 'fas fa-flag',
+                        label = 'Leave Booth',
+                        onSelect = function()
+                            leaveBooth(k)
+                        end,
+                        canInteract = function()
+                            if not isMarketOpen() then return end
+                            if not Config.Market[k]['owner'] then return end
+                            return true
+                        end,
+                    },
+                    {   
+                        name = "market_booth_"..k,
+                        icon = 'fas fa-circle',
+                        label = 'Join Booth',
+                        onSelect = function()
+                            joinBooth(k)
+                        end,
+                        canInteract = function()
+                            if not isMarketOpen() then return end
+                            if not Config.Market[k]['owner'] then return end
+                            return true
+                        end,
+                    },
+                    {   
+                        name = "market_booth_"..k,
+                        icon = 'fas fa-recycle',
+                        label = 'Change Banner',
+                        onSelect = function()
+                            changeBanner(k)
+                        end,
+                        canInteract = function()
+                            if not isMarketOpen() then return end
+                            if not Config.Market[k]['owner'] then return end
+                            return true
+                        end,
+                    },
+                }
+            })
+
+            exports.ox_target:addBoxZone({
+                coords = v['register']['coords'].xyz,
+                size = vec3(1.5, 1.0, 1.0),
+                rotation = 135,
+                debug = Config.Debug,
+                options = {
+                    {   
+                        name = "market_register_"..k,
+                        icon = 'fas fa-box',
+                        label = 'Inventory',
+                        onSelect = function()
+                            marketStash(k)
+                        end,
+                        canInteract = function()
+                            if not isMarketOpen() then return end
+                            if not Config.Market[k]['owner'] then return end
+                            return true
+                        end,
+                    },
+                    {   
+                        name = "market_register_"..k,
+                        icon = 'fas fa-hand-holding',
+                        label = 'Pick Up',
+                        onSelect = function()
+                            marketPickup(k)
+                        end,
+                        canInteract = function()
+                            if not isMarketOpen() then return end
+                            if not Config.Market[k]['owner'] then return end
+                            return true
+                        end,
+                    },
+                }
+            })
+            return
+        end
+
+
         exports[Config.Target]:AddBoxZone("market_booth_"..k, v['booth']['coords'].xyz, 1.0, 3.0, {
             name = "market_booth_"..k,
             heading = v['booth']['heading'],
@@ -199,9 +348,8 @@ CreateThread(function()
                     icon = 'fas fa-flag',
                     label = 'Claim Booth',
                     canInteract = function()
-                        if isMarketOpen() then
-                            return true
-                        end
+                        if not isMarketOpen() then return end
+                        return true
                     end,
                 },
                 {
@@ -211,9 +359,9 @@ CreateThread(function()
                     icon = 'fas fa-flag',
                     label = 'Leave Booth',
                     canInteract = function()
-                        if isMarketOpen() and Config.Market[k]['owner'] then
-                            return true
-                        end
+                        if not isMarketOpen() then return end
+                        if not Config.Market[k]['owner'] then return end
+                        return true
                     end,
                 },
                 {
@@ -223,9 +371,9 @@ CreateThread(function()
                     icon = 'fas fa-circle',
                     label = 'Join Booth',
                     canInteract = function()
-                        if isMarketOpen() and Config.Market[k]['owner'] then
-                            return true
-                        end
+                        if not isMarketOpen() then return end
+                        if not Config.Market[k]['owner'] then return end
+                        return true
                     end,
                 },
                 {
@@ -235,9 +383,9 @@ CreateThread(function()
                     icon = 'fas fa-recycle',
                     label = 'Change Banner',
                     canInteract = function()
-                        if isMarketOpen() and Config.Market[k]['owner'] then
-                            return true
-                        end
+                        if not isMarketOpen() then return end
+                        if not Config.Market[k]['owner'] then return end
+                        return true
                     end,
                 },
             },
@@ -259,9 +407,9 @@ CreateThread(function()
                     icon = 'fas fa-box',
                     label = 'Inventory',
                     canInteract = function()
-                        if isMarketOpen() and Config.Market[k]['owner'] then
-                            return true
-                        end
+                        if not isMarketOpen() then return end
+                        if not Config.Market[k]['owner'] then return end
+                        return true
                     end,
                 },
                 {
@@ -271,9 +419,9 @@ CreateThread(function()
                     icon = 'fas fa-hand-holding',
                     label = 'Pick Up',
                     canInteract = function()
-                        if isMarketOpen() and Config.Market[k]['owner'] then
-                            return true
-                        end
+                        if not isMarketOpen() then return end
+                        if not Config.Market[k]['owner'] then return end
+                        return true
                     end,
                 },
             },

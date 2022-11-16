@@ -21,6 +21,9 @@
 ## General Setup
 A group based market system, allowing you to claim, join, leave, and change booth DUIs all in game set through the config. Each booth is set with an inventory to store any sellable content inside and a pickup location to handle your transactions with your customers. This system is absolutely amazing for roleplay within any server that needs ideas for businesses
 
+## Compatibility
+This system is compatible with (ox_inventory, ox_target, ox_lib, etc) & (qb-inventory, qb-target, etc) All options are in the config to modify your prefered style of installation
+
 Preview: [SOON]
 
 ## Features
@@ -38,7 +41,9 @@ Preview: [SOON]
 Taken#8395 - Farmers Market Map [Discord Server]()
 
 ## Dependencies
-1. PolyZone
-2. qb-target
-3. qb-input
+1. qbcore
+2. qb-target or ox_target
+3. qb-inventory or ox_inventory
+4. ox_lib (if using any ox resource)
+5. PolyZone
 

@@ -155,6 +155,21 @@ QBCore.Functions.CreateCallback('brazzers-market:server:getMarketDui', function(
     cb(Config.Market)
 end)
 
+AddEventHandler('playerDropped', function(reason)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+
+    local CID = Player.PlayerData.citizenid
+
+    if Player then
+        for k, _ in pairs(Config.Market) do
+            if Config.Market[k]['owner'] == CID then
+                resetBooth(k)
+            end
+        end
+    end
+end)
+
 AddEventHandler('onResourceStart', function(resourceName)
     if resourceName == GetCurrentResourceName() then
         if Config.Inventory == 'ox' then

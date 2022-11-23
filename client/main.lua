@@ -244,7 +244,7 @@ CreateThread(function()
                     {   
                         name = "market_booth_"..k,
                         icon = 'fas fa-flag',
-                        label = 'Claim Booth',
+                        label = Lang:t('target.claim_booth'),
                         onSelect = function()
                             claimBooth(k)
                         end,
@@ -256,7 +256,7 @@ CreateThread(function()
                     {   
                         name = "market_booth_"..k,
                         icon = 'fas fa-flag',
-                        label = 'Leave Booth',
+                        label = Lang:t('target.leave_booth'),
                         onSelect = function()
                             leaveBooth(k)
                         end,
@@ -269,7 +269,7 @@ CreateThread(function()
                     {   
                         name = "market_booth_"..k,
                         icon = 'fas fa-circle',
-                        label = 'Join Booth',
+                        label = Lang:t('target.join_booth'),
                         onSelect = function()
                             joinBooth(k)
                         end,
@@ -282,7 +282,7 @@ CreateThread(function()
                     {   
                         name = "market_booth_"..k,
                         icon = 'fas fa-recycle',
-                        label = 'Change Banner',
+                        label = Lang:t('target.banner_change'),
                         onSelect = function()
                             changeBanner(k)
                         end,
@@ -304,7 +304,7 @@ CreateThread(function()
                     {   
                         name = "market_register_"..k,
                         icon = 'fas fa-box',
-                        label = 'Inventory',
+                        label = Lang:t('target.register_inventory'),
                         onSelect = function()
                             marketStash(k)
                         end,
@@ -317,7 +317,7 @@ CreateThread(function()
                     {   
                         name = "market_register_"..k,
                         icon = 'fas fa-hand-holding',
-                        label = 'Pick Up',
+                        label = Lang:t('target.register_pickup'),
                         onSelect = function()
                             marketPickup(k)
                         end,
@@ -346,7 +346,7 @@ CreateThread(function()
                         claimBooth(k)
                     end,
                     icon = 'fas fa-flag',
-                    label = 'Claim Booth',
+                    label = Lang:t('target.claim_booth'),
                     canInteract = function()
                         if not isMarketOpen() then return end
                         return true
@@ -357,7 +357,7 @@ CreateThread(function()
                         leaveBooth(k)
                     end,
                     icon = 'fas fa-flag',
-                    label = 'Leave Booth',
+                    label = Lang:t('target.leave_booth'),
                     canInteract = function()
                         if not isMarketOpen() then return end
                         if not Config.Market[k]['owner'] then return end
@@ -369,7 +369,7 @@ CreateThread(function()
                         joinBooth(k)
                     end,
                     icon = 'fas fa-circle',
-                    label = 'Join Booth',
+                    label = Lang:t('target.join_booth'),
                     canInteract = function()
                         if not isMarketOpen() then return end
                         if not Config.Market[k]['owner'] then return end
@@ -381,7 +381,7 @@ CreateThread(function()
                         changeBanner(k)
                     end,
                     icon = 'fas fa-recycle',
-                    label = 'Change Banner',
+                    label = Lang:t('target.banner_change'),
                     canInteract = function()
                         if not isMarketOpen() then return end
                         if not Config.Market[k]['owner'] then return end
@@ -405,7 +405,7 @@ CreateThread(function()
                         marketStash(k)
                     end,
                     icon = 'fas fa-box',
-                    label = 'Inventory',
+                    label = Lang:t('target.register_inventory'),
                     canInteract = function()
                         if not isMarketOpen() then return end
                         if not Config.Market[k]['owner'] then return end
@@ -417,7 +417,7 @@ CreateThread(function()
                         marketPickup(k)
                     end,
                     icon = 'fas fa-hand-holding',
-                    label = 'Pick Up',
+                    label = Lang:t('target.register_pickup'),
                     canInteract = function()
                         if not isMarketOpen() then return end
                         if not Config.Market[k]['owner'] then return end

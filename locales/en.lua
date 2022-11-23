@@ -24,6 +24,14 @@ local Translations = {
         change_banner = 'Change banner',
         banner_url = 'Imjur (1024x1025)',
         submit = 'Submit',
+    },
+    target = {
+        claim_booth = 'Claim Booth',
+        leave_booth = 'Leave Booth',
+        join_booth = 'Join Booth',
+        banner_change = 'Change Banner',
+        register_inventory = 'Inventory',
+        register_pickup = 'Pickup'
     }
 
 }

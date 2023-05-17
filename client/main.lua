@@ -200,6 +200,13 @@ end
 
 -- Net Events
 
+AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+    QBCore.Functions.TriggerCallback('brazzers-market:server:getMarkets', function(result)
+		Config.Market = result
+        setupDUI()
+    end)
+end)
+
 RegisterNetEvent('brazzers-market:client:updateBooth', function(market, type, citizenid)
     Config.Market[market][type] = citizenid
 end)
@@ -233,7 +240,10 @@ end)
 -- Threads
 
 CreateThread(function()
-    setupDUI()
+    QBCore.Functions.TriggerCallback('brazzers-market:server:getMarkets', function(result)
+		Config.Market = result
+        setupDUI()
+    end)
 end)
 
 CreateThread(function()

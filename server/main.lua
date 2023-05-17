@@ -180,3 +180,9 @@ AddEventHandler('onResourceStart', function(resourceName)
         end
     end
 end)
+
+-- Callbacks
+
+QBCore.Functions.CreateCallback('brazzers-market:server:getMarkets', function(_, cb)
+	cb(Config.Market)
+end)

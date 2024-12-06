@@ -1,3 +1,5 @@
+local Config = require 'shared.shared'
+
 local inFarmersMarket = false
 local inZone = false
 
@@ -6,7 +8,10 @@ local inZone = false
 exports('inFarmersMarket', function() return inFarmersMarket end)
 
 local function CreateDUI(market, url)
-    Config.Market[market].boothDUI.dui = { obj = CreateDui(url, Config.Market[market].boothDUI.width, Config.Market[market].boothDUI.height) }
+    Config.Market[market].boothDUI.dui = {
+        obj = CreateDui(url, Config.Market[market].boothDUI.width, Config.Market[market].boothDUI.height),
+    }
+
     Config.Market[market].boothDUI.dui.dict = ("%s-dict"):format(market)
     Config.Market[market].boothDUI.dui.texture = ("%s-txt"):format(market)
     local dictObject = CreateRuntimeTxd(Config.Market[market].boothDUI.dui.dict)
@@ -26,7 +31,7 @@ local function removeDUI(market, removeAll)
 end
 
 local function partOfBooth(booth)
-    local retval, cid = false, exports['brazzers-lib']:getCID()
+    local retval, cid = false, exports['Renewed-Lib']:getCharId()
 
     if Config.Market[booth].owner.cid == cid then
         retval = true
@@ -50,8 +55,8 @@ local function initLoad()
             CreateDUI(k, Config.Market[k].boothDUI.url)
         end
     end
-    
-    local function oxExit()
+
+    local function onExit()
         inZone = false
         for k, _ in pairs(Config.Market) do
             removeDUI(k, true)
@@ -71,7 +76,7 @@ local function claimBooth(k)
     if not isMarketOpen() then return notification("market_not_open", "error") end
     if Config.Market[k].owner.cid then return notification("already_claimed", "error") end
 
-    local input = lib.inputDialog(Config.Language.input_password, {Config.Language.set_password})
+    local input = lib.inputDialog(locale('input_password'), {locale('set_password')})
     if not input then return end
 
     local password = tonumber(input[1])
@@ -88,7 +93,7 @@ local function joinBooth(k)
     if not isMarketOpen() then return notification("market_not_open", "error") end
     if not Config.Market[k].owner.cid then return notification("not_claimed", "error") end
 
-    local input = lib.inputDialog(Config.Language.input_password, {Config.Language.password})
+    local input = lib.inputDialog(locale('input_password'), {locale('password')})
     if not input then return end
 
     local password = tonumber(input[1])
@@ -104,7 +109,7 @@ local function changeBanner(k)
     local result = partOfBooth(k)
     if not result then return TriggerEvent('DoLongHudText', 'Not part of booth', 2) end
 
-    local input = lib.inputDialog(Config.Language.change_banner, {Config.Language.banner_url})
+    local input = lib.inputDialog(locale('change_banner'), {locale('banner_url')})
     if not input then return end
 
     local banner = input[1]
@@ -192,7 +197,7 @@ CreateThread(function()
             rotation = 135,
             debug = Config.Debug,
             options = {
-                {   
+                {
                     name = "market_booth_"..k,
                     icon = 'fas fa-flag',
                     label = 'Claim Booth',
@@ -204,7 +209,7 @@ CreateThread(function()
                         return true
                     end,
                 },
-                {   
+                {
                     name = "market_booth_"..k,
                     icon = 'fas fa-flag',
                     label = 'Leave Booth',
@@ -217,7 +222,7 @@ CreateThread(function()
                         return true
                     end,
                 },
-                {   
+                {
                     name = "market_booth_"..k,
                     icon = 'fas fa-circle',
                     label = 'Join Booth',
@@ -230,7 +235,7 @@ CreateThread(function()
                         return true
                     end,
                 },
-                {   
+                {
                     name = "market_booth_"..k,
                     icon = 'fas fa-recycle',
                     label = 'Change Banner',
@@ -252,7 +257,7 @@ CreateThread(function()
             rotation = 135,
             debug = Config.Debug,
             options = {
-                {   
+                {
                     name = "market_register_"..k,
                     icon = 'fas fa-box',
                     label = 'Inventory',
@@ -265,7 +270,7 @@ CreateThread(function()
                         return true
                     end,
                 },
-                {   
+                {
                     name = "market_register_"..k,
                     icon = 'fas fa-hand-holding',
                     label = 'Pick Up',

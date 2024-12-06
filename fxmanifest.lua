@@ -3,9 +3,11 @@ game 'gta5'
 
 name "Brazzers Farmers Market"
 author "Brazzers Development | MannyOnBrazzers#6826"
-version "2.0"
+version "2.0.0"
 
 lua54 'yes'
+
+ox_lib 'locale'
 
 client_scripts {
     'client/*.lua',
@@ -19,7 +21,12 @@ server_scripts {
 
 shared_scripts {
     '@ox_lib/init.lua',
-	'shared/*.lua',
+    '@Renewed-Lib/init.lua'
+}
+
+files {
+    'locales/*.json',
+    'shared/*.lua',
 }
 
 escrow_ignore {

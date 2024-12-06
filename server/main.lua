@@ -1,3 +1,5 @@
+local Config = require 'shared.shared'
+
 local function resetBooth(k)
     Config.Market[k].owner = {}
     Config.Market[k].groupMembers = {}
